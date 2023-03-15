@@ -1,0 +1,54 @@
+{
+    "openapi": "3.1.0",
+    "info": { "title": "API", "description": "API", "version": "1.0.0" },
+    "servers": [{ "url": "http://localhost:{port}", "description": "Local", "variables": { "port": { "default": "3000" } } }],
+    "paths": {
+        "/user/register": {
+            "post": {
+                "operationId": "register",
+                "tags": ["auth"],
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": { "email": { "type": "string" } },
+                                "required": ["email"],
+                                "additionalProperties": false
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "default": {
+                        "description": "Success Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": { "type": "string", "enum": ["pending", "success", "deleted"] },
+                                                "email": { "type": "string" }
+                                            },
+                                            "required": ["status", "email"],
+                                            "additionalProperties": false
+                                        },
+                                        "token": { "type": "string" }
+                                    },
+                                    "required": ["user", "token"],
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [],
+    "components": { "schemas": {} }
+}

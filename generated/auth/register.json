@@ -1,0 +1,24 @@
+{
+    "type": "object",
+    "properties": {
+        "body": { "type": "object", "properties": { "email": { "type": "string" } }, "required": ["email"], "additionalProperties": false },
+        "params": { "type": "object", "additionalProperties": { "not": {} } },
+        "query": { "type": "object", "additionalProperties": { "not": {} } },
+        "data": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "type": "object",
+                    "properties": { "status": { "type": "string", "enum": ["pending", "success", "deleted"] }, "email": { "type": "string" } },
+                    "required": ["status", "email"],
+                    "additionalProperties": false
+                },
+                "token": { "type": "string" }
+            },
+            "required": ["user", "token"],
+            "additionalProperties": false
+        }
+    },
+    "required": ["body", "params", "query", "data"],
+    "additionalProperties": false
+}
