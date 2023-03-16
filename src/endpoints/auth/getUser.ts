@@ -1,5 +1,4 @@
 import { EndPoint } from "..";
-import { Empty } from "../../types/Empty";
 import { Documentation } from "../../types/Documentation";
 import { CustomHandler } from "../../types/Server";
 import { User, UserStatus } from "../models/user";
@@ -8,14 +7,16 @@ export type DataType = {
     user: Omit<User, "password">;
     token: string;
 };
-export type ParameterType = Empty;
+export type ParameterType = {
+    userId: string;
+};
 export type BodyType = {
     email: string;
 };
-export type QueryType = Empty;
-export type registerDocumentation = Documentation<DataType, ParameterType, BodyType, QueryType>;
+export type QueryType = { status: UserStatus };
+export type getUserDocumentation = Documentation<DataType, ParameterType, BodyType, QueryType>;
 
-const register: CustomHandler<DataType, ParameterType, BodyType, QueryType> = async (request, response) => {
+const getUser: CustomHandler<DataType, ParameterType, BodyType, QueryType> = async (request, response) => {
     const { email } = request.body;
 
     response.json({
@@ -25,12 +26,12 @@ const register: CustomHandler<DataType, ParameterType, BodyType, QueryType> = as
                 status: UserStatus.pending,
                 email: email,
             },
-            token: ""
+            token: "",
         },
     });
 };
 
-export const registerEndpoint = new EndPoint<DataType, ParameterType, BodyType, QueryType>("/user/register", "post", register, __filename, {
+export const getUserEndpoint = new EndPoint<DataType, ParameterType, BodyType, QueryType>("/user/:userId", "get", getUser, __filename, {
     document: "both",
     autharize: false,
 });

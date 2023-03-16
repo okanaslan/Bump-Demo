@@ -3,23 +3,14 @@
     "info": { "title": "API", "description": "API", "version": "1.0.0" },
     "servers": [{ "url": "http://localhost:{port}", "description": "Local", "variables": { "port": { "default": "3000" } } }],
     "paths": {
-        "/user/register": {
-            "post": {
-                "operationId": "register",
+        "/user/{{userId}}": {
+            "get": {
+                "operationId": "getUser",
                 "tags": ["auth"],
-                "parameters": [],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": { "email": { "type": "string" } },
-                                "required": ["email"],
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
+                "parameters": [
+                    { "in": "query", "name": "status", "required": true, "schema": {} },
+                    { "in": "path", "name": "userId", "required": true, "schema": {} }
+                ],
                 "responses": {
                     "default": {
                         "description": "Success Response",

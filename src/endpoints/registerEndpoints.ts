@@ -1,5 +1,3 @@
-import { registerEndpoint } from "./auth/register";
+import { getUserEndpoint } from "./auth/getUser";
 
-export const endpoints = [
-    registerEndpoint,
-];
+export const endpoints = [getUserEndpoint];
