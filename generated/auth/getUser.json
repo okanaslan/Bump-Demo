@@ -5,7 +5,7 @@
         "params": { "type": "object", "properties": { "userId": { "type": "string" } }, "required": ["userId"], "additionalProperties": false },
         "query": {
             "type": "object",
-            "properties": { "status": { "type": "string", "enum": ["pending", "success", "deleted"] } },
+            "properties": { "status": { "type": "string", "enum": ["pending", "success"] } },
             "required": ["status"],
             "additionalProperties": false
         },
@@ -14,13 +14,12 @@
             "properties": {
                 "user": {
                     "type": "object",
-                    "properties": { "status": { "type": "string", "enum": ["pending", "success", "deleted"] }, "email": { "type": "string" } },
+                    "properties": { "status": { "type": "string", "enum": ["pending", "success"] }, "email": { "type": "string" } },
                     "required": ["status", "email"],
                     "additionalProperties": false
-                },
-                "token": { "type": "string" }
+                }
             },
-            "required": ["user", "token"],
+            "required": ["user"],
             "additionalProperties": false
         }
     },

@@ -1,37 +1,29 @@
 import { EndPoint } from "..";
 import { Documentation } from "../../types/Documentation";
 import { CustomHandler } from "../../types/Server";
-import { User, UserStatus } from "../models/user";
+import { User, UserStatus } from "../../models/user";
 
-export type DataType = {
+type DataType = {
     user: Omit<User, "password">;
-    token: string;
 };
-export type ParameterType = {
+type ParameterType = {
     userId: string;
 };
-export type BodyType = {
+type BodyType = {
     email: string;
 };
-export type QueryType = { status: UserStatus };
-export type getUserDocumentation = Documentation<DataType, ParameterType, BodyType, QueryType>;
+type QueryType = { status: UserStatus };
 
 const getUser: CustomHandler<DataType, ParameterType, BodyType, QueryType> = async (request, response) => {
     const { email } = request.body;
 
     response.json({
-        status: { success: true },
-        data: {
-            user: {
-                status: UserStatus.pending,
-                email: email,
-            },
-            token: "",
+        user: {
+            status: UserStatus.pending,
+            email: email,
         },
     });
 };
 
-export const getUserEndpoint = new EndPoint<DataType, ParameterType, BodyType, QueryType>("/user/:userId", "get", getUser, __filename, {
-    document: "both",
-    autharize: false,
-});
+export type getUserDocumentation = Documentation<DataType, ParameterType, BodyType, QueryType>;
+export const getUserEndpoint = new EndPoint<DataType, ParameterType, BodyType, QueryType>("/user/:userId", "get", getUser, __filename, { autharize: false });

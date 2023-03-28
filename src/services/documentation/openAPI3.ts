@@ -8,9 +8,7 @@ export class OpenAPI3 {
             description: "API",
             version: "1.0.0",
         },
-        servers: [
-            { url: "http://localhost:{port}", description: "Local", variables: { port: { default: "3000" } } },
-        ],
+        servers: [{ url: "http://localhost:{port}", description: "Local", variables: { port: { default: "3000" } } }],
         paths: {},
         tags: [],
         components: { schemas: {} },

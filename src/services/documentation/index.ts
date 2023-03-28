@@ -2,15 +2,14 @@ import { OpenAPI3 } from "./openAPI3";
 import { JsonSchemaGenerator } from "./jsonSchemaGenerator";
 import { ParameterObject, PathItemObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 
-import { endpoints } from "../../endpoints/registerEndpoints";
 import { createDirectory, getFileName, writeFile } from "../../utils/fileUtils";
-import { IEndPoint } from "../../endpoints/interface";
+import { EndPoint } from "../../endpoints";
+import { getUserEndpoint } from "../../endpoints/auth/getUser";
 
 export class DocumentationService {
     static documentEndpoints() {
-        for (const endpoint of endpoints) {
-            DocumentationService.addEndpoint(endpoint);
-        }
+        DocumentationService.addEndpoint(getUserEndpoint);
+
         const documentation = OpenAPI3.documentation.getSpec();
         writeFile({ filePath: "swagger.json", data: JSON.stringify(documentation) });
 
@@ -18,33 +17,22 @@ export class DocumentationService {
         process.exit();
     }
 
-    private static saveEndpoint(endpoint: IEndPoint<any, any, any, any>): SchemaObject | undefined {
+    private static addEndpoint(endpoint: EndPoint<any, any, any, any>) {
         const { fileName, folderName } = getFileName({ filePath: endpoint.filePath });
-        const schema = JsonSchemaGenerator.generateSchema(`${fileName}Documentation`);
-        createDirectory({ dir: `./generated/${folderName}` });
-        writeFile({ filePath: `./generated/${folderName}/${fileName}.json`, data: JSON.stringify(schema ?? {}) });
-        return schema;
-    }
 
-    private static addEndpoint(endpoint: IEndPoint<any, any, any, any>) {
-        const pathDoc: PathItemObject = {};
         const schema = DocumentationService.saveEndpoint(endpoint);
-
         const bodySchema = schema?.properties?.body;
         const dataSchema = schema?.properties?.data;
+        const paramsSchema = DocumentationService.schemaToParameter(schema?.properties?.params, "path");
+        const querySchema = DocumentationService.schemaToParameter(schema?.properties?.query, "query");
 
-        const paramsSchema = DocumentationService.SchemaToParameter(schema?.properties?.params, "path");
-        const querySchema = DocumentationService.SchemaToParameter(schema?.properties?.query, "query");
-        const parameters = endpoint.config.autharize
-            ? [{ name: "token", in: "header" as const, required: true, schema: {} }, ...querySchema, ...paramsSchema]
-            : [...querySchema, ...paramsSchema];
-
-        const { fileName, folderName } = getFileName({ filePath: endpoint.filePath });
-
+        const pathDoc: PathItemObject = {};
         pathDoc[endpoint.method] = {
             operationId: fileName,
             tags: [folderName],
-            parameters,
+            parameters: endpoint.config.autharize
+                ? [{ name: "token", in: "header" as const, required: true, schema: {} }, ...querySchema, ...paramsSchema]
+                : [...querySchema, ...paramsSchema],
             requestBody:
                 endpoint.method == "get"
                     ? undefined
@@ -70,7 +58,15 @@ export class DocumentationService {
         OpenAPI3.addPathDefinition(OpenAPI3.documentation, endpoint.path, pathDoc);
     }
 
-    private static SchemaToParameter(schema: SchemaObject | ReferenceObject | undefined, inside: "path" | "query"): ParameterObject[] {
+    private static saveEndpoint(endpoint: EndPoint<any, any, any, any>): SchemaObject | undefined {
+        const { fileName, folderName } = getFileName({ filePath: endpoint.filePath });
+        const schema = JsonSchemaGenerator.generateSchema(`${fileName}Documentation`);
+        createDirectory({ dir: `./generated/${folderName}` });
+        writeFile({ filePath: `./generated/${folderName}/${fileName}.json`, data: JSON.stringify(schema ?? {}) });
+        return schema;
+    }
+
+    private static schemaToParameter(schema: SchemaObject | ReferenceObject | undefined, inside: "path" | "query"): ParameterObject[] {
         const parameters: ParameterObject[] = [];
         if (schema && "properties" in schema && schema.properties) {
             for (const property of Object.keys(schema.properties)) {

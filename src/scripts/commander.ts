@@ -12,5 +12,4 @@ program.command("documentEndpoints").action(async () => {
     }
 });
 
-
 program.parse();

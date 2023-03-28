@@ -1,20 +1,16 @@
 import express from "express";
 import { Server as httpServer } from "http";
-
-import { endpoints } from "./endpoints/registerEndpoints";
+import { getUserEndpoint } from "./endpoints/auth/getUser";
 
 export class Server {
     static expressServer = express();
     static httpServer?: httpServer;
 
     static async start(port?: number): Promise<void> {
-        Server.expressServer.use(express.json({ }));
-        Server.expressServer.use(express.urlencoded({ extended: false }));
+        Server.expressServer.use(express.json({}));
 
         // Listen endpoints
-        for (const endpoint of endpoints) {
-            endpoint.listen(this.expressServer);
-        }
+        this.expressServer.get(getUserEndpoint.path, getUserEndpoint.handler);
 
         try {
             Server.httpServer = Server.expressServer.listen({ port }, async () => console.info(`Service ready at port: ${port}`));
