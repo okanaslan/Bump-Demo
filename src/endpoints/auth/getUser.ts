@@ -4,7 +4,7 @@ import { CustomHandler } from "../../types/Server";
 import { User, UserStatus } from "../../models/user";
 
 type DataType = {
-    user: Omit<User, "password">;
+    user: Omit<User, "password"> & { userId: string };
 };
 type ParameterType = {
     userId: string;
@@ -15,10 +15,12 @@ type BodyType = {
 type QueryType = { status: UserStatus };
 
 const getUser: CustomHandler<DataType, ParameterType, BodyType, QueryType> = async (request, response) => {
+    const { userId } = response.locals;
     const { email } = request.body;
 
     response.json({
         user: {
+            userId,
             status: UserStatus.pending,
             email: email,
         },

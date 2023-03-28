@@ -14,9 +14,13 @@
             "properties": {
                 "user": {
                     "type": "object",
-                    "properties": { "status": { "type": "string", "enum": ["pending", "success"] }, "email": { "type": "string" } },
-                    "required": ["status", "email"],
-                    "additionalProperties": false
+                    "additionalProperties": false,
+                    "properties": {
+                        "userId": { "type": "string" },
+                        "status": { "type": "string", "enum": ["pending", "success"] },
+                        "email": { "type": "string" }
+                    },
+                    "required": ["email", "status", "userId"]
                 }
             },
             "required": ["user"],
