@@ -1,6 +1,6 @@
 import { readdirSync, writeFileSync, existsSync, mkdirSync, readFileSync } from "fs";
 
-export function getFileName({ filePath }: { filePath: string }) {
+export function getFileDetails({ filePath }: { filePath: string }) {
     const splittedPath = filePath.replace(/\\/g, "/").split("/");
     const fileName = splittedPath.pop()?.split(".")[0] ?? "unknown";
     const folderName = splittedPath.pop() ?? "unknown";

@@ -40,6 +40,5 @@
             }
         }
     },
-    "tags": [],
-    "components": { "schemas": {} }
+    "tags": []
 }

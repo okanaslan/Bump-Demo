@@ -2,7 +2,7 @@ import { OpenAPI3 } from "./openAPI3";
 import { JsonSchemaGenerator } from "./jsonSchemaGenerator";
 import { ParameterObject, PathItemObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 
-import { createDirectory, getFileName, writeFile } from "../../utils/fileUtils";
+import { createDirectory, getFileDetails, writeFile } from "../../utils/fileUtils";
 import { EndPoint } from "../../endpoints";
 import { getUserEndpoint } from "../../endpoints/auth/getUser";
 
@@ -18,7 +18,7 @@ export class DocumentationService {
     }
 
     private static addEndpoint(endpoint: EndPoint<any, any, any, any>) {
-        const { fileName, folderName } = getFileName({ filePath: endpoint.filePath });
+        const { fileName, folderName } = getFileDetails({ filePath: endpoint.filePath });
 
         const schema = DocumentationService.saveEndpoint(endpoint);
         const bodySchema = schema?.properties?.body;
@@ -31,7 +31,7 @@ export class DocumentationService {
             operationId: fileName,
             tags: [folderName],
             parameters: endpoint.config.autharize
-                ? [{ name: "token", in: "header" as const, required: true, schema: {} }, ...querySchema, ...paramsSchema]
+                ? [{ name: "Authorization", in: "header" as const, required: true, schema: {} }, ...querySchema, ...paramsSchema]
                 : [...querySchema, ...paramsSchema],
             requestBody:
                 endpoint.method == "get"
@@ -55,11 +55,11 @@ export class DocumentationService {
             },
         };
 
-        OpenAPI3.addPathDefinition(OpenAPI3.documentation, endpoint.path, pathDoc);
+        OpenAPI3.addPathDefinition(endpoint.path, pathDoc);
     }
 
     private static saveEndpoint(endpoint: EndPoint<any, any, any, any>): SchemaObject | undefined {
-        const { fileName, folderName } = getFileName({ filePath: endpoint.filePath });
+        const { fileName, folderName } = getFileDetails({ filePath: endpoint.filePath });
         const schema = JsonSchemaGenerator.generateSchema(`${fileName}Documentation`);
         createDirectory({ dir: `./generated/${folderName}` });
         writeFile({ filePath: `./generated/${folderName}/${fileName}.json`, data: JSON.stringify(schema ?? {}) });

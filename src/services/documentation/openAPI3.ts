@@ -11,18 +11,19 @@ export class OpenAPI3 {
         servers: [{ url: "http://localhost:{port}", description: "Local", variables: { port: { default: "3000" } } }],
         paths: {},
         tags: [],
-        components: { schemas: {} },
     });
 
-    static addPathDefinition(doc: OpenApiBuilder, name: string, pathDoc: PathItemObject) {
-        const splited = name.split("/");
+    static addPathDefinition(path: string, pathDoc: PathItemObject) {
+        // In the express server path a parameter is defined as :parameter.
+        // We need to change it to {{parameter}} to be compatible with openapi3-ts
+        const splited = path.split("/");
         for (let index = 0; index < splited.length; index++) {
             const element = splited[index]!;
             if (element[0] == ":") {
                 splited[index] = `{{${element.substring(1)}}}`;
             }
         }
-        const path = splited.join("/");
-        doc.addPath(path, pathDoc);
+        const convertedPath = splited.join("/");
+        OpenAPI3.documentation.addPath(convertedPath, pathDoc);
     }
 }
