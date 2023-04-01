@@ -1,8 +1,8 @@
 import { verify } from "jsonwebtoken";
 import { NextFunction } from "express";
-import { Context, CustomRequest, CustomResponse } from "../types/Server";
+import { Context, CustomHandler } from "../types/Server";
 
-export const AuthMiddleware = (request: CustomRequest<any, any, any, any>, response: CustomResponse<any>, next: NextFunction) => {
+export const AuthMiddleware: CustomHandler<any, any, any, any> = (request, response, next: NextFunction) => {
     const { authorization } = request.headers;
     if (!authorization) {
         return response.status(401).json({ error: "Unauthorized" });
